@@ -6,7 +6,7 @@
         <div class="top"></div>
         <div class="center">
           <span class="input_name">账&nbsp;&nbsp;&nbsp;&nbsp;户</span>
-          <input v-model="shopphonenum" type="text" placeholder="请填写用户名" class="input_text">
+          <input v-model="shopphonenum" type="text" placeholder="手机号码" class="input_text">
           <span class="input_name">密&nbsp;&nbsp;&nbsp;&nbsp;码</span>
           <input v-model="shoppassword" type="password" placeholder="请填写密码" class="input_text">
           <div class="message">
@@ -35,7 +35,7 @@
                 shoppassword: this.shoppassword
             }).then(response => {
                 if (response.body === '1') {
-                  this.$router.push('/manager/mindex');
+                  this.$router.push('/manager/index');
                 } else {
                   this.message = '密码错误';
                 }

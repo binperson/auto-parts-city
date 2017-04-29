@@ -20,6 +20,22 @@
           <el-form-item label="描述" prop="desc">
             <el-input v-model="goodsForm.desc"></el-input>
           </el-form-item>
+          <el-form-item
+            label="商品图片"
+            >
+            <el-upload
+              class="upload-demo"
+              ref="upload"
+              :action="'/addPic/'+id"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :file-list="fileList"
+              :auto-upload="false">
+              <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传一个jpg/png文件，且不超过500kb</div>
+            </el-upload>
+
+          </el-form-item>
 
           <el-form-item
             label="现价"
@@ -67,6 +83,8 @@
           oldPrice: '',
           info: ''
         },
+        id: 1,
+        fileList: [],
         rules: {
           typename: [
             { required: true, message: '请选择活动资源', trigger: 'change' }
@@ -98,10 +116,18 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.$http.post('/docreategoods', this.goodsForm).then(response => {
-              console.log(response.body);
-              if (response.body === '1') {
-                this.success();
-                this.$router.push('/manager/index/show');
+              response = response.body;
+              console.log(111);
+              console.log(response);
+              if (response.errno === 0) {
+                  console.log(response.id);
+                this.id = response.id;
+                this.$nextTick(function () {
+                  this.submitUpload();
+                  this.success();
+                  this.$refs.upload.submit();
+                  this.$router.push('/manager/index/show');
+                });
               } else {
                 this.message = '密码错误';
               }
@@ -122,6 +148,15 @@
           message: '恭喜你，创建成功！',
           type: 'success'
         });
+      },
+      submitUpload() {
+        this.$refs.upload.submit();
+      },
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
       }
     }
   };

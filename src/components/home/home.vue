@@ -2,7 +2,7 @@
   <div class="home">
 
     <keep-alive>
-      <router-view :seller="seller"></router-view>
+      <router-view :sellers="sellers"></router-view>
     </keep-alive>
     <div class="footer">
       <div class="footer-wrapper border-1px-before">
@@ -12,7 +12,7 @@
         </router-link>
         <router-link to="/home/find" class="footer-item" href="">
           <i class="icon icon-find"></i>
-          <span class="footer-index">发现</span>
+          <span class="footer-index">订单</span>
         </router-link>
         <router-link to="/home/me" class="footer-item" href="">
           <i class="icon icon-me"></i>
@@ -28,14 +28,15 @@
   export default {
     data() {
       return {
-        seller: {}
+        sellers: []
       };
     },
     created() {
-      this.$http.get('/city/seller').then((response) => {
+      this.$http.get('/shop').then((response) => {
         response = response.body;
         if (response.errno === ERR_OK) {
-          this.seller = response.data;
+          console.log(response.data);
+          this.sellers = response.data;
         }
       });
     }

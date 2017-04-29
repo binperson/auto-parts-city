@@ -23,7 +23,9 @@
                   <h2 class="name">{{food.name}}</h2>
                   <p class="desc">{{food.description}}</p>
                   <div class="extra">
-                    <span class="count">月售{{food.sellCount}}份</span><span>好评率{{food.rating}}%</span>
+
+                    <span class="count"></span><span></span>
+
                   </div>
                   <div class="price">
                     <span class="now">￥{{food.price}}</span>
@@ -38,7 +40,7 @@
           </li>
         </ul>
       </div>
-      <shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" ref="shopCart"></shopcart>
+      <shopcart :id="id" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" ref="shopCart"></shopcart>
     </div>
     <food @increment="incrementTotal" :food="selectedFood" ref="food"></food>
   </div>
@@ -55,6 +57,12 @@
     props: {
       seller: {
         type: Object
+      },
+      num: {
+          type: String
+      },
+      id: {
+        type: String
       }
     },
     data() {
@@ -67,8 +75,11 @@
     },
     created() {
       this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-      this.$http.get('/goods').then((response) => {
+      console.log(33333);
+      console.log(this.num);
+      this.$http.post('/goods', {'shopphonenum': this.num}).then((response) => {
         response = response.body;
+        console.log(response);
         if (response.errno === ERR_OK) {
           this.goods = response.data;
           this.$nextTick(() => {

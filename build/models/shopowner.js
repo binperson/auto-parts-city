@@ -16,7 +16,16 @@ var shopSchema = new mongoose.Schema({
   'deliveryprice' : Number,/*配送费*/
   'minprice' : Number,/*起送价格*/
   'supports' : [Number],/*活动支持*/
-  'infos' : [String]/*更多信息*/
+  'infos' : [String],/*更多信息*/
+  'limit': String,
+  'deliveryTime': Number,
+  'score': Number,
+  'serviceScore': Number,
+  'foodScore': Number,
+  'rankRate': Number,
+  'ratingCount': Number,
+  'sellCount': Number,
+  'see': Number
 });
 
 var Shopowner = mongoose.model("Shopowner",shopSchema);

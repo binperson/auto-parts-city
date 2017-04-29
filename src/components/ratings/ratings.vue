@@ -14,7 +14,7 @@
             <span class="score">{{seller.serviceScore}}</span>
           </div>
           <div class="score-wrapper">
-            <span class="title">服务态度</span>
+            <span class="title">商品评分</span>
             <star :size="36" :score="seller.foodScore"></star>
             <span class="score">{{seller.foodScore}}</span>
           </div>
@@ -70,6 +70,9 @@
     props: {
       seller: {
         type: Object
+      },
+      id: {
+        type: String
       }
     },
     data() {
@@ -80,7 +83,7 @@
       };
     },
     created() {
-      this.$http.get('/ratings').then((response) => {
+      this.$http.post('/ratings', {'shopid': this.id}).then((response) => {
         response = response.body;
         if (response.errno === ERR_OK) {
           this.ratings = response.data;

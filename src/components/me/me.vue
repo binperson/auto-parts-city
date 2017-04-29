@@ -5,11 +5,15 @@
     </header>
     <section>
       <div class="profile-wrapper">
-        <span class="icon-head"></span>
+        <span v-show="!show" class="icon-head"></span>
+        <img v-show="show" :src="'/avatar/'+imglink" class="icon-head" alt="">
         <div class="profile-login">
-          <h3>登陆／注册</h3>
+          <h3 v-show="!show">登陆／注册</h3>
+          <h3 class="buyname" v-show="show">{{name}}</h3>
         </div>
-        <span class="icon-keyboard_arrow_right"></span>
+        <router-link to="/home/login">
+          <span class="icon-keyboard_arrow_right"></span>
+        </router-link>
       </div>
     </section>
     <section class="info-data border-1px">
@@ -53,8 +57,33 @@
   import split from '@/components/split/split';
 
   export default {
+      data() {
+         return {
+           imglink: '',
+           name: '',
+           show: false
+         };
+      },
     components: {
       split
+    },
+    watch: {
+      // 如果路由有变化，会再次执行该方法
+      '$route': 'fetchData'
+    },
+    methods: {
+      fetchData () {
+        this.$http.get('/myself').then(response => {
+          response = response.body;
+          console.log(response);
+          if (response.errno === 0) {
+            this.imglink = response.imglink;
+            this.name = response.name;
+            this.show = true;
+          }
+        }, response => {
+        });
+      }
     }
   };
 </script>
@@ -92,11 +121,17 @@
         font-size: 20px
         align-items: center
         justify-content: center
+        .buyname
+          max-width: 240px
+          white-space: nowrap
+          overflow: hidden
+          text-overflow: ellipsis
       .icon-keyboard_arrow_right
         position: absolute
         right: 15px
         bottom: 25px
         line-height: 60px
+        color: #fff
     .info-data
       display: table
       width: 100%

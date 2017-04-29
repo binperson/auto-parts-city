@@ -122,7 +122,8 @@
               console.log(response.body);
               if (response.body === '1') {
                 this.success();
-                this.$router.push('/manager/index/show');
+                this.changelimit('1');
+                this.$router.push('/manager/index');
               } else {
                 this.message = '密码错误';
               }
@@ -156,6 +157,9 @@
           value: '',
           key: Date.now()
         });
+      },
+      changelimit(act) {
+          this.$emit('changelimit', act);
       }
     }
   };

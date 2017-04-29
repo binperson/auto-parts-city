@@ -26,39 +26,44 @@
             <el-menu default-active="2" @open="handleOpen" @close="handleClose">
               <el-submenu index="1">
                 <template slot="title"><i class="el-icon-setting"></i>店铺信息</template>
-                <el-menu-item-group>
+                <el-menu-item-group v-show="limit==='1'">
                   <template slot="title">店铺管理</template>
                   <router-link to="/manager/index/show">
                     <el-menu-item index="1-3">卖家秀</el-menu-item>
                   </router-link>
-                  <el-menu-item index="1-1">店铺信息</el-menu-item>
-                  <el-menu-item index="1-2">修改信息</el-menu-item>
+                  <router-link to="/manager/index/shopinfo">
+                    <el-menu-item index="1-1">店铺信息</el-menu-item>
+                  </router-link>
 
                 </el-menu-item-group>
-                <el-menu-item-group title="店铺管理">
+                <el-menu-item-group v-show="limit==='0'" title="店铺管理">
                   <router-link to="/manager/index/createshop">
                     <el-menu-item index="1-4">创建商铺</el-menu-item>
                   </router-link>
                 </el-menu-item-group>
               </el-submenu>
-              <el-submenu index="2">
+              <el-submenu index="2" v-show="limit==='1'">
                 <template slot="title"><i class="el-icon-search"></i>商品信息</template>
                 <el-menu-item-group>
                   <template slot="title">商品管理</template>
-                  <el-menu-item index="2-1">商品信息</el-menu-item>
+                  <router-link to="/manager/index/goodinfo">
+                    <el-menu-item index="2-1">商品信息</el-menu-item>
+                  </router-link>
                   <router-link to="/manager/index/creategoods">
                     <el-menu-item index="2-2">添加商品</el-menu-item>
                   </router-link>
-                  <el-menu-item index="2-3">修改信息</el-menu-item>
-                  <el-menu-item index="2-4">删除商品</el-menu-item>
                 </el-menu-item-group>
               </el-submenu>
-              <el-menu-item index="3"><i class="el-icon-document"></i>处理订单</el-menu-item>
+              <router-link to="/manager/index/order">
+                <el-menu-item index="3" v-show="limit==='1'">
+                  <i class="el-icon-document"></i>处理订单
+                </el-menu-item>
+              </router-link>
             </el-menu>
           </el-col>
           <el-col :span="20">
             <keep-alive>
-              <router-view keep-alive></router-view>
+              <router-view keep-alive @changelimit="changelimit"></router-view>
             </keep-alive>
           </el-col>
         </el-row>
@@ -73,8 +78,23 @@
   export default {
     data() {
       return {
-        activeIndex: '1'
+        activeIndex: '1',
+        limit: '-1'
       };
+    },
+    created() {
+      this.$http.get('/limits').then(response => {
+        response = response.body;
+        console.log(response);
+        if (response === '-1') {
+          this.$router.push('/manager/login');
+        } else if (response === '1') {
+          this.limit = '1';
+        } else if (response === '0') {
+          this.limit = '0';
+        }
+      }, response => {
+      });
     },
     methods: {
       handleSelect(key, keyPath) {
@@ -85,6 +105,9 @@
       },
       handleClose(key, keyPath) {
         console.log(key, keyPath);
+      },
+      changelimit(act) {
+          this.limit = act;
       }
     }
   };

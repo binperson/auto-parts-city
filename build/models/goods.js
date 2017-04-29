@@ -12,7 +12,10 @@ var goodsSchema = new mongoose.Schema({
   "price": Number,
   "oldPrice": Number,
   "info": String,
-  "shopowner": String
+  "shopowner": String,
+  "image": String,
+  "index": Number,
+  "goodsindex": Number
 });
 
 var Goods = mongoose.model("Goods",goodsSchema);

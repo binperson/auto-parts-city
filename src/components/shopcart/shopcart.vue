@@ -75,6 +75,9 @@
       },
       eventHub: {
         type: Object
+      },
+      id: {
+        type: String
       }
     },
     data() {
@@ -116,7 +119,22 @@
         if (this.totalPrice < this.minPrice) {
           return;
         }
-        window.alert(`支付${this.totalPrice}元`);
+
+        let info = '';
+        this.selectFoods.forEach((food) => {
+          info = info + '物品名称:' + food.name + ',' + '数量:' + food.count + ';';
+        });
+        this.$http.post('/addorder', {'info': info, 'id': this.id, 'totalPrice': this.totalPrice}).then((response) => {
+          response = response.body;
+        console.log(response);
+        if (response === '1') {
+          window.alert(`支付${this.totalPrice}元`);
+          this.$router.push('/home/index');
+        }
+        if (response === '-1') {
+          this.$router.push('/home/login');
+        }
+        });
       },
       hideList() {
         this.fold = true;

@@ -28,31 +28,31 @@
     </slider>
     <h3 class="home-title border-1px">全部商家</h3>
     <section class="shoplist">
-      <router-link to="/shop">
+      <router-link v-for="item in sellers" :to="'/shop/'+item.id">
         <section class="shop-container border-1px">
           <div class="logo-container">
             <div class="logo-main">
-              <img width="60" height="60" :src="seller.avatar" alt="">
+              <img width="60" height="60" :src="'/avatar/'+item.avatar" alt="">
             </div>
           </div>
           <div class="shop-main">
 
             <div class="shop-line">
-              <div class="shopname">{{seller.name}}</div>
+              <div class="shopname">{{item.name}}</div>
             </div>
             <div class="shop-line">
               <div class="rate-wrapper">
-                <star :size="24" :score="seller.score"></star>
-                <span class="shop-rate">{{seller.score}}</span>
+                <star :size="24" :score="item.score"></star>
+                <span class="shop-rate">{{item.score}}</span>
               </div>
             </div>
             <div class="shop-line">
               <div class="shop-moneylimit">
-                <span>¥{{seller.minPrice}}元起送/配送费￥{{seller.deliveryPrice}}元</span>
+                <span>¥{{item.minPrice}}元起送/配送费￥{{item.deliveryPrice}}元</span>
               </div>
               <div class="shop-timedistance">
                 <div class="shop-time">
-                  <span>{{seller.deliveryTime}}分钟</span>
+                  <span>{{item.deliveryTime}}分钟</span>
                 </div>
               </div>
             </div>
@@ -69,8 +69,8 @@
 
   export default {
     props: {
-      seller: {
-        type: Object
+      sellers: {
+        type: Array
       }
     },
     components: {
