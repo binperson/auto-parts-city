@@ -30,7 +30,7 @@
           <h1 class="title">商品信息</h1>
           <p class="text">{{food.info}}</p>
         </div>
-        <split v-show="false"></split>
+        <split></split>
         <div v-show="false" class="rating">
           <h1 class="title">商品评价</h1>
           <ratingselect @toggle="togglecontent" @select="selectchange" :select-type="selectType"

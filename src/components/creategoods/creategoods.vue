@@ -8,10 +8,10 @@
           <el-form-item label="产品分类" prop="typename">
             <el-radio-group v-model="goodsForm.typename">
               <el-radio label="热销榜"></el-radio>
-              <el-radio label="最新单品"></el-radio>
-              <el-radio label="爱车一族"></el-radio>
-              <el-radio label="汽配DIY"></el-radio>
-              <el-radio label="炫车一夏"></el-radio>
+              <el-radio label="车身附件"></el-radio>
+              <el-radio label="汽车电子"></el-radio>
+              <el-radio label="发动机底盘"></el-radio>
+              <el-radio label="维修保养"></el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="产品名称" prop="name">

@@ -4,7 +4,7 @@
       <div class="header-logo">
         <img src="./home_logo.png" alt="" width="60" height="60">
         <form action="" class="search-form">
-          <input type="text" placeholder="搜索商家、商品" class="home-search">
+          <input v-model="info" @keyup.enter="search" type="text" placeholder="搜索商家、商品" class="home-search">
         </form>
       </div>
 
@@ -28,7 +28,7 @@
     </slider>
     <h3 class="home-title border-1px">全部商家</h3>
     <section class="shoplist">
-      <router-link v-for="item in sellers" :to="'/shop/'+item.id">
+      <router-link v-show="item.state === 2" v-for="item in sellers" :to="'/shop/'+item.id">
         <section class="shop-container border-1px">
           <div class="logo-container">
             <div class="logo-main">
@@ -68,9 +68,27 @@
   import star from '@/components/star/star';
 
   export default {
+    data() {
+      return {
+        info: ''
+      };
+    },
     props: {
       sellers: {
         type: Array
+      }
+    },
+    methods: {
+      search() {
+        this.$http.post('/search', {'name': this.info}).then(response => {
+          response = response.body;
+          console.log(response);
+          if (response !== '0') {
+            let link = '/shop/' + response;
+            this.$router.push(link);
+          }
+        }, response => {
+        });
       }
     },
     components: {

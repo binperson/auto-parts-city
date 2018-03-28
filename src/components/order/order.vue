@@ -1,7 +1,7 @@
 <template>
   <div class="order">
-    <h2 class="h">更改店铺信息</h2>
-    <p class="desc">秀出店铺秀出商品秀出个性，比如店铺DIY、个性汽车配件、有意思配送包装等。</p>
+    <h2 class="h">订单详情</h2>
+    <p class="desc">用户信息，订单详情，总价格等等。</p>
     <div class="form-box">
       <div class="form-content">
         <el-table

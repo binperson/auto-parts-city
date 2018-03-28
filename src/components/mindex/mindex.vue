@@ -12,8 +12,9 @@
           </div>
           <div class="nav">
             <el-menu :default-active="activeIndex" mode="horizontal" @select="handleSelect">
-              <el-menu-item index="1">处理中心</el-menu-item>
-              <el-menu-item index="2"><a>订单管理</a></el-menu-item>
+              <el-menu-item v-show="limit !== '3'" index="1">处理中心</el-menu-item>
+              <el-menu-item v-show="limit === '3'" index="2"><a>管理员管理</a></el-menu-item>
+              <el-menu-item @click="exit" index="3"><a>退出</a></el-menu-item>
             </el-menu>
           </div>
         </div>
@@ -59,11 +60,26 @@
                   <i class="el-icon-document"></i>处理订单
                 </el-menu-item>
               </router-link>
+              <router-link to="/manager/index/sellmanager">
+                <el-menu-item index="3" v-show="limit==='3'">
+                  <i class="el-icon-document"></i>商家管理
+                </el-menu-item>
+              </router-link>
+              <router-link to="/manager/index/checkseller">
+                <el-menu-item index="3" v-show="limit==='3'">
+                  <i class="el-icon-document"></i>商家审核
+                </el-menu-item>
+              </router-link>
+              <router-link to="/manager/index/addinformation">
+                <el-menu-item index="3" v-show="limit==='3'">
+                  <i class="el-icon-document"></i>行业资讯
+                </el-menu-item>
+              </router-link>
             </el-menu>
           </el-col>
           <el-col :span="20">
             <keep-alive>
-              <router-view keep-alive @changelimit="changelimit"></router-view>
+              <router-view @changelimit="changelimit"></router-view>
             </keep-alive>
           </el-col>
         </el-row>
@@ -92,6 +108,9 @@
           this.limit = '1';
         } else if (response === '0') {
           this.limit = '0';
+        } else if (response === '3') {
+          this.limit = '3';
+          this.activeIndex = '2';
         }
       }, response => {
       });
@@ -108,6 +127,13 @@
       },
       changelimit(act) {
           this.limit = act;
+      },
+      exit() {
+          console.log(33);
+        this.$http.post('/exit').then(response => {
+          this.$router.push('/manager/login');
+        }, response => {
+        });
       }
     }
   };

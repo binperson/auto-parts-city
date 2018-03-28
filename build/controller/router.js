@@ -5,6 +5,8 @@ const Shopowner = require("../models/shopowner");
 const Goods = require("../models/goods");
 const Buyer = require("../models/buyer")
 const Order = require("../models/order");
+const Admin = require("../models/admin");
+const Information = require("../models/information");
 
 const formidable = require("formidable");
 const md5 = require("md5");
@@ -23,22 +25,30 @@ exports.dobuyLogin = function (req, res, next) {
         return;
       }
       if (result.length === 0) {
-        let mo = ["moren0.jpg", "moren1.jpg", "moren2.jpg", "moren3.jpg"];
-        let more = mo[Math.floor(Math.random() * 3)];
-        Buyer.create({
-          "buyerphonenum": buyerphonenum,
-          "buyerpassword": jiamihou,
-          'avatar': more,
-        }, function (err, result1) {
-          if (err) {
-            res.send("-1");
+        if(resultn.length === 0) {
+          let mo = ["moren0.jpg", "moren1.jpg", "moren2.jpg", "moren3.jpg"];
+          let more = mo[Math.floor(Math.random() * 3)];
+          Buyer.create({
+            "buyerphonenum": buyerphonenum,
+            "buyerpassword": jiamihou,
+            'avatar': more,
+          }, function (err, result1) {
+            if (err) {
+              res.send("-1");
+              return;
+            }
+            req.session.login = "1";
+            req.session.buyerphonenum = buyerphonenum;
+            res.send("1");
             return;
-          }
+          });
+        } else {
           req.session.login = "1";
           req.session.buyerphonenum = buyerphonenum;
-          res.send("1");
+          res.send("3");
           return;
-        });
+        }
+
       } else {
         if (jiamihou == result[0].buyerpassword) {
           req.session.login = "1";
@@ -69,29 +79,49 @@ exports.doLogin = function (req, res, next) {
       if (result.length === 0) {
         let mo = ["moren0.jpg", "moren1.jpg", "moren2.jpg", "moren3.jpg"];
         let more = mo[Math.floor(Math.random() * 3)];
-        Shopowner.create({
-          "shopphonenum": shopphonenum,
-          "shoppassword": jiamihou,
-          'avatar': more,
-          'limit': '0',
-          'deliveryTime': 120,
-          'score': 0,
-          'serviceScore': 0,
-          'foodScore': 0,
-          'rankRate': 0,
-          'ratingCount': 0,
-          'sellCount': 0,
-          'see': 0
-        }, function (err, result1) {
-          if (err) {
-            res.send("-1");
-            return;
-          }
-          req.session.login = "1";
-          req.session.shopphonenum = shopphonenum;
-          res.send("1");
-          return;
+        Admin.create({
+          "name":"admin",/*电话*/
+          "password":"admin",/*密码*/
+          "avatar": more
+        },function (err, result111){
+          Admin.find({
+            "name": shopphonenum
+          },function (err, resultn) {
+            if(resultn.length === 0){
+              let deliveryTime = 120 + Math.floor(Math.random() * 20);
+              Shopowner.create({
+                "shopphonenum": shopphonenum,
+                "shoppassword": jiamihou,
+                'avatar': more,
+                'limit': '0',
+                'deliveryTime': deliveryTime,
+                'score': 0,
+                'serviceScore': 0,
+                'foodScore': 0,
+                'rankRate': 0,
+                'ratingCount': 0,
+                'sellCount': 0,
+                'see': 0,
+                'state': 1
+              }, function (err, result1) {
+                if (err) {
+                  res.send("-1");
+                  return;
+                }
+                req.session.login = "1";
+                req.session.shopphonenum = shopphonenum;
+                res.send("1");
+                return;
+              });
+            } else {
+              req.session.login = "1";
+              req.session.shopphonenum = shopphonenum;
+              res.send("1");
+            }
+          });
         });
+
+
       } else {
         if (jiamihou == result[0].shoppassword) {
           req.session.login = "1";
@@ -154,6 +184,39 @@ exports.doSetshow = function (req, res, next) {
   })
 }
 
+exports.addinformation = function (req, res, next) {
+  let form = new formidable.IncomingForm();
+  form.uploadDir = path.normalize(__dirname + '/../upload/info');
+  form.parse(req, function (err, fields, files) {
+    Information.find({},function (err, result) {
+      let Ilength = result.length;
+      let oldpath = files.file.path;
+      let newpath = path.normalize(__dirname + '/../upload/info') + '/info' + Ilength + '.jpg';
+      fs.rename(oldpath, newpath, function (err) {
+        if (err) {
+          res.send('失败');
+          return;
+        }
+        let addpath = '/info'+ Ilength + '.jpg';
+        Information.create({'pic':addpath},function (err, result1) {
+          res.send('1');
+          result;
+        });
+      });
+    });
+  });
+}
+
+exports.infodelete = function (req, res, next) {
+  let form = new formidable.IncomingForm();
+  form.parse(req, function (err, fields, files) {
+    Information.remove(fields,function (result, err) {
+      res.send("1");
+      return;
+    });
+  });
+}
+
 exports.doCreateshop = function (req, res, next) {
   let form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
@@ -187,7 +250,8 @@ exports.doCreateshop = function (req, res, next) {
       minprice: fields.minprice,
       supports: supports,
       infos: infos,
-      limit: '1'
+      limit: '1',
+      state: 2
     }, function (err, result) {
       res.send('1');
       return;
@@ -281,6 +345,7 @@ exports.shop = function (req, res, next) {
       shop.ratingCount = result[i].rankRate;
       shop.sellCount = result[i].rankRate;
       shop.bulletin = result[i].desctail;
+      shop.state = result[i].state;
       let oldsupports = result[i].supports;
       let arr = ['在线支付满28减5', '汽配无限活力全场8折起', '爱车精彩套餐', '该商家支持发票,请下单写好发票抬头', '已加入“汽配保”计划,性能安全保障'];
       shop.supports = [];
@@ -417,19 +482,19 @@ exports.goods = function (req, res, next) {
       good1.type = 0;
       good1.foods = [];
       let good2 = {};
-      good2.name = "最新单品";
+      good2.name = "车身附件";
       good2.type = 1;
       good2.foods = [];
       let good3 = {};
-      good3.name = "爱车一族";
+      good3.name = "汽车电子";
       good3.type = 2;
       good3.foods = [];
       let good4 = {};
-      good4.name = "汽配DIY";
+      good4.name = "发动机底盘";
       good4.type = 3;
       good4.foods = [];
       let good5 = {};
-      good5.name = "炫车一夏";
+      good5.name = "维修保养";
       good5.type = 4;
       good5.foods = [];
       for (let i = 0; i < result.length; i++) {
@@ -438,19 +503,19 @@ exports.goods = function (req, res, next) {
         if (result[i].typename === "热销榜") {
           type1.push(ogood);
         }
-        if (result[i].typename === "最新单品") {
+        if (result[i].typename === "车身附件") {
           type2.push(ogood);
 
         }
-        if (result[i].typename === "爱车一族") {
+        if (result[i].typename === "汽车电子") {
           type3.push(ogood);
 
         }
-        if (result[i].typename === "汽配DIY") {
+        if (result[i].typename === "发动机底盘") {
           type4.push(ogood);
 
         }
-        if (result[i].typename === "炫车一夏") {
+        if (result[i].typename === "维修保养") {
           type5.push(ogood);
 
         }
@@ -573,6 +638,26 @@ exports.ratings = function (req, res, next) {
 
 }
 
+exports.passshop = function (req, res,next) {
+  let form = new formidable.IncomingForm();
+  form.parse(req, function (err, fields, files) {
+    Shopowner.update(fields,{'state':3},function (result, err) {
+      res.send("1");
+      return;
+    });
+  })
+}
+
+exports.deleteshop = function (req,res,next) {
+  let form = new formidable.IncomingForm();
+  form.parse(req, function (err, fields, files) {
+    Shopowner.remove(fields,function (result, err) {
+      res.send("1");
+      return;
+    });
+  })
+}
+
 
 exports.posts = function (req, res, next) {
   let form = new formidable.IncomingForm();
@@ -589,11 +674,21 @@ exports.limits = function (req, res, next) {
   }
   Shopowner.find({"shopphonenum": req.session.shopphonenum}, function (err, result) {
     if (result.length === 0) {
-      res.send('-1');
-      return;
+      Admin.find({"name":req.session.shopphonenum}, function (err, result1) {
+        if (result1.length === 0) {
+          res.send('-1');
+          return;
+        } else {
+          res.send('3');
+          return;
+        }
+      });
+
+    } else {
+      var bc = result[0].limit;
+      res.send(bc);
     }
-    var bc = result[0].limit;
-    res.send(bc);
+
   });
 }
 
@@ -719,6 +814,13 @@ exports.getorder = function (req, res, next) {
 
 }
 
+exports.getinformation = function (req, res, next) {
+  Information.find({},function (err, result) {
+    res.json(result);
+    return;
+  });
+}
+
 exports.commit = function (req, res, next) {
   let form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
@@ -790,6 +892,26 @@ exports.orderTable = function (req, res, next) {
       }
 
     })
+  });
+}
+exports.exit = function (req,res,next) {
+  req.session.login = "0";
+  req.session.shopphonenum = undefined;
+  res.send('退出成功');
+}
+
+exports.search = function (req, res, next) {
+  let form = new formidable.IncomingForm();
+  form.parse(req, function (err, fields, files) {
+    Shopowner.find(fields,function (err, result) {
+      if(result.length > 0){
+        res.send(result[0]._id);
+        return;
+      } else {
+        res.send('0');
+        return;
+      }
+    });
   });
 }
 

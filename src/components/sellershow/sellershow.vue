@@ -26,6 +26,29 @@
         fileList2: []
       };
     },
+    created() {
+      this.$http.get('/oshop').then(response => {
+        response = response.body;
+        console.log(response);
+        if (response.errno === 0) {
+          let data = response.data.pics;
+          console.log(data);
+          let pics = [];
+          for (let i = 0; i < data.length; i++) {
+            let pic = {};
+            pic.name = data[i];
+            pic.url = data[i];
+            pics.push(pic);
+          }
+          console.log(2222, pics);
+          this.fileList2 = pics;
+        } else {
+
+        }
+      }, response => {
+
+      });
+    },
     methods: {
       handleRemove(file, fileList) {
         console.log(file, fileList);

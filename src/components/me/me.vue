@@ -37,7 +37,7 @@
         </aside>
         <div class="index-main">
            我的订单
-          <span class="icon-keyboard_arrow_right"></span>
+          <router-link to="/home/find"><span class="icon-keyboard_arrow_right"></span></router-link>
         </div>
       </div>
       <div class="index-item">
@@ -45,11 +45,12 @@
           <span class="icon-integral"></span>
         </aside>
         <div class="index-main">
-           积分商城
-          <span class="icon-keyboard_arrow_right"></span>
+           汽配资讯
+          <span @click="changeState()" :class="{'el-icon-arrow-down':arrow===1,'icon-keyboard_arrow_right':arrow!==1}"></span>
         </div>
       </div>
     </div>
+    <img v-show="arrow===1" v-for="item in pics" :src="'/info'+item" width="100%" alt="">
   </div>
 </template>
 
@@ -61,28 +62,52 @@
          return {
            imglink: '',
            name: '',
-           show: false
+           show: false,
+           pics: [],
+           arrow: 1
          };
       },
     components: {
       split
+    },
+    created() {
+        this.fetchData();
     },
     watch: {
       // 如果路由有变化，会再次执行该方法
       '$route': 'fetchData'
     },
     methods: {
-      fetchData () {
+      fetchData() {
         this.$http.get('/myself').then(response => {
           response = response.body;
+          console.log(22222);
           console.log(response);
           if (response.errno === 0) {
             this.imglink = response.imglink;
             this.name = response.name;
             this.show = true;
           }
+          this.$http.get('/information').then(response => {
+            response = response.body;
+            console.log(11111);
+            console.log(response);
+            let pics = [];
+            for (let i = 0; i < response.length; i++) {
+              pics.push(response[i].pic);
+            }
+            this.pics = pics;
+          }, response => {
+          });
         }, response => {
         });
+      },
+      changeState() {
+          if (this.arrow === 1) {
+              this.arrow = 2;
+          } else {
+              this.arrow = 1;
+          }
       }
     }
   };
@@ -187,7 +212,9 @@
           justify-content: space-between
           width: 100%
           padding: 13px 10px 13px 0
-
-
+          .el-icon-arrow-down
+            font-size: 10px
+            position: relative
+            left: -2px
 
 </style>

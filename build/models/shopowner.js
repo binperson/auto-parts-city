@@ -25,7 +25,8 @@ var shopSchema = new mongoose.Schema({
   'rankRate': Number,
   'ratingCount': Number,
   'sellCount': Number,
-  'see': Number
+  'see': Number,
+  'state': Number/*1,2,3*/
 });
 
 var Shopowner = mongoose.model("Shopowner",shopSchema);
